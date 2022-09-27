@@ -1,0 +1,76 @@
+<form>
+    <mat-card>
+        <mat-card-title>Basic Coffee Information</mat-card-title>
+        <mat-form-field>
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <input matInput placeholder="Coffee Name" name="name" [(ngModel)]="coffee.name">
+        </mat-form-field>
+    
+        <mat-form-field>
+            <!-- <mat-label>Select an option</mat-label> -->
+            <mat-select placeholder="Coffee Type" name="type" [(ngModel)]="coffee.type">
+                <mat-option *ngFor="let type of types" [value]="type">{{ type }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-title>Place Information</mat-card-title>
+        <mat-form-field>
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <input matInput placeholder="Place Name" name="place" [(ngModel)]="coffee.place">
+        </mat-form-field>
+        <mat-form-field>
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <input matInput placeholder="Address" name="address" [(ngModel)]="coffee.location.address">
+        </mat-form-field>
+        <mat-form-field>
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <input matInput placeholder="City" name="city" [(ngModel)]="coffee.location.city">
+        </mat-form-field>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-title>Ratings</mat-card-title>
+        <mat-card-subtitle>Overall Ratings</mat-card-subtitle>
+        <mat-slider max="10" name="rating" [(ngModel)]="coffee.rating" thumbLabel tickInterval="1"></mat-slider>
+
+        <mat-slide-toggle #tastingSelector [checked]="tastingEnabled ? true : false" (change)="tastingRatingChanged(tastingSelector.checked)">Tasting Ratings</mat-slide-toggle>
+
+        <section id="tasting" *ngIf="tastingSelector.checked">
+            
+            <mat-label>Aroma</mat-label>
+            <mat-slider max="10" name="aromaRating" [(ngModel)]="coffee.tastingRating.aroma" thumbLabel tickInterval="1">
+            </mat-slider>
+        
+            <mat-label>Flavor</mat-label>
+            <mat-slider max="10" name="flavorRating" [(ngModel)]="coffee.tastingRating.flavor" thumbLabel tickInterval="1">
+            </mat-slider>
+        
+            <mat-label>Intensity</mat-label>
+            <mat-slider max="10" name="intensityRating" [(ngModel)]="coffee.tastingRating.intensity" thumbLabel tickInterval="1">
+            </mat-slider>
+            
+            <mat-label>Sweetness</mat-label>
+            <mat-slider max="10" name="sweetnessRating" [(ngModel)]="coffee.tastingRating.sweetness" thumbLabel tickInterval="1">
+            </mat-slider>
+            
+            <mat-label>Aftertaste</mat-label>
+            <mat-slider max="10" name="aftertasteRating" [(ngModel)]="coffee.tastingRating.aftertaste" thumbLabel tickInterval="1">
+            </mat-slider>
+        </section>
+    </mat-card>
+
+    <mat-card>
+        <mat-form-field>
+            <!-- <mat-label>Favorite food</mat-label> -->
+            <textarea matInput placeholder="Notes" name="notes" [(ngModel)]="coffee.notes">
+            </textarea>
+        </mat-form-field>
+    </mat-card>
+
+    <mat-card>
+        <button mat-raised-button (click)="cancel()">Cancel</button>
+        <button mat-raised-button color="accent" (click)="save()">Save</button>
+    </mat-card>
+</form>
