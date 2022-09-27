@@ -10,7 +10,7 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
 
-  public endPoint = "http://localhost:3000"
+  public endPoint = "http://192.168.100.39:3000"
 
   getList(callback:any) {
     // const list = [

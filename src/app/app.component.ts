@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { SwPush, SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -9,11 +10,47 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AppComponent implements OnInit {
   title = 'PWA';
 
-  constructor(private snackBar: MatSnackBar) {
+  constructor(private snackBar: MatSnackBar,
+              private ngswUpdate: SwUpdate,
+              private ngswPush: SwPush) {
 
   }
 
   ngOnInit() {
+    // Checking SW update Status
+    this.ngswUpdate.versionUpdates.subscribe(evt => {
+      switch(evt.type) {
+        case 'VERSION_DETECTED':
+          console.log(`Downloading new app version: ${evt.version.hash}`);
+          break;
+        case 'VERSION_READY':
+          console.log(`Current app version: ${evt.currentVersion.hash}`);
+          console.log(`New app version ready for use: ${evt.latestVersion.hash}`);
+          const sb = this.snackBar.open("There is an update available", "Install Now", { duration: 4000 });
+          sb.onAction().subscribe( () => {
+            // Calling SwUpdate#activateUpdate() updates a tab to the latest version without reloading the page, 
+            // but this could break the application.
+            // this.ngsw.activateUpdate();
+
+            // Reload the page to update to the latest version.
+            console.log("The App was updated");
+            
+            document.location.reload();
+          })
+          break;
+        case 'VERSION_INSTALLATION_FAILED':
+          console.log(`Failed to install app version '${evt.version.hash}': ${evt.error}`);
+          break;
+      }
+    })
+    this.ngswUpdate.checkForUpdate();
+
+    // checking network status
+    this.updateNetworkStatusUI();
+    window.addEventListener("online", this.updateNetworkStatusUI);
+    window.addEventListener("offline", this.updateNetworkStatusUI);
+
+    // checking Installation status
     if ((navigator as any).standalone === false) {
       /*
       * if (navigator.standalone) {
@@ -51,5 +88,30 @@ export class AppComponent implements OnInit {
         })
       }
     }
+  }
+
+  updateNetworkStatusUI() {
+    if(navigator.onLine) {
+      //you might be online
+      (document.querySelector("body") as any).style = "";
+    } else {
+      // 100% Sure you are offline
+      (document.querySelector("body") as any).style = "filter: grayscale(1)";
+    }
+  }
+
+  subscribeToPush() {
+    // For push notifications
+    console.log("inside push to subscribe");
+    
+    Notification.requestPermission( permission => {
+      console.log(permission);
+      if(permission === "granted") {
+        const sub = this.ngswPush.requestSubscription( {serverPublicKey: "PUBLIC_VAPID_KEY_OF_SERVER" });
+        // TODO: Send to server.
+        // this.ngswPush.subscription;
+        // this.ngswPush.messages;
+      }
+    })
   }
 }

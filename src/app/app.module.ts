@@ -21,6 +21,9 @@ import { ListComponent } from './list/list.component';
 import { CoffeeComponent } from './coffee/coffee.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,7 @@ import { HttpClientModule } from '@angular/common/http';
     CoffeeComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     BrowserAnimationsModule,
     MatButtonModule,
@@ -42,7 +45,14 @@ import { HttpClientModule } from '@angular/common/http';
     MatSlideToggleModule,
     FormsModule,
     HttpClientModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    RouterModule
   ],
   providers: [GeolocationService, DataService],
   bootstrap: [AppComponent]
